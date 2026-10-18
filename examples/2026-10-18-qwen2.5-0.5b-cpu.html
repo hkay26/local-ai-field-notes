@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local AI Field Notes - qwen2.5:0.5b</title>
+<style>:root{font:16px/1.55 system-ui;color:#203448;background:#eef3f6}body{margin:0}main{max-width:1040px;margin:auto;padding:40px 22px}header{background:#14283f;color:white;padding:32px;border-radius:18px}h1{font-size:2.5rem;line-height:1.1;margin:12px 0}header p{color:#d5e2ef}.eyebrow{letter-spacing:.14em;font-size:.75rem;font-weight:700}.notice{border-left:4px solid #a7700a;background:#fff3d8;padding:18px;margin:22px 0}.stats,.metrics,.row{display:flex;gap:24px;flex-wrap:wrap}.stats{padding:18px 0}.stats span,.metrics span{font-size:.8rem;color:#5a6f80}b{display:block;font-size:1.2rem;color:#17394b}article{background:white;border:1px solid #d4e0e7;border-radius:12px;padding:24px;margin:18px 0}h2{margin:0;font-size:1.2rem}.row{align-items:center;justify-content:space-between}.pill{font-size:.75rem;border:1px solid #91bcb5;padding:4px 10px;border-radius:99px}pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;background:#eff4f7;border-radius:8px;font-size:.85rem}summary{cursor:pointer;color:#076f68}footer{font-size:.85rem;color:#607083}details{margin-top:20px}@media print{main{padding:0}article{break-inside:avoid}details{display:block}}</style></head><body><main>
+<header><div class="eyebrow">LOCAL AI FIELD NOTES / EXPERIMENT RECORD</div><h1>qwen2.5:0.5b</h1><p>Windows desktop - i7-8700K, 32 GB RAM, CPU only, 2 threads<br>2026-10-18T10:26:11.536903+00:00</p></header>
+<div class="notice">MEASURED RUN. Results describe only this model, configuration and test set; no broader ranking is implied.</div><div class="stats"><span>Completed<b>3 / 3</b></span><span>Median client wall time<b>3.066 s</b></span><span>Evidence source<b>measured</b></span></div>
+<article><div class="row"><h2>Extract a fictional event as strict JSON</h2><span class="pill">fail</span></div><p>Repetition 1 · completed</p><div class="metrics"><span>Wall time<b>3.066265</b></span><span>First content<b>2.264286</b></span><span>Runtime tok/s<b>37.4784</b></span></div><p>Response is not strict JSON. Markdown fences and commentary are not accepted.</p><details><summary>Inspect prompt and output</summary><h3>Prompt</h3><pre>Return ONLY valid JSON with keys city (string), day (string), attendees (integer). Fictional event: a Houston workshop is on Tuesday and has 12 attendees. Do not add explanations.</pre><h3>Output / error</h3><pre>```json
+{
+  &quot;city&quot;: &quot;Houston&quot;,
+  &quot;day&quot;: &quot;Tuesday&quot;,
+  &quot;attendees&quot;: 12
+}
+```</pre></details></article><article><div class="row"><h2>Summarize a fictional library notice</h2><span class="pill">pass</span></div><p>Repetition 1 · completed</p><div class="metrics"><span>Wall time<b>3.1175</b></span><span>First content<b>2.193782</b></span><span>Runtime tok/s<b>36.8756</b></span></div><p>Mechanical constraints only; this does not establish factual or semantic quality.</p><details><summary>Inspect prompt and output</summary><h3>Prompt</h3><pre>Summarize the following fictional notice in 35 words or fewer. Include the library, day and closure time. Notice: Cedar Library will close at 4 p.m. on Friday for maintenance. It reopens Saturday at 10 a.m. Digital services remain available.</pre><h3>Output / error</h3><pre>Cedar Library closes at 4 p.m. on Friday for maintenance; it reopens at 10 a.m. on Saturday, with digital services available.</pre></details></article><article><div class="row"><h2>Explain an ordinary instruction in Urdu</h2><span class="pill">human_review</span></div><p>Repetition 1 · completed</p><div class="metrics"><span>Wall time<b>2.861607</b></span><span>First content<b>1.995176</b></span><span>Runtime tok/s<b>38.1522</b></span></div><p>Human review: correct Urdu, clear beginner instructions, three short sentences, and no false claim of an action performed. No automatic language-quality score.</p><details><summary>Inspect prompt and output</summary><h3>Prompt</h3><pre>In clear Urdu, explain to a beginner how to save a document before closing an application. Keep it to three short sentences. Do not claim that you have saved anything.</pre><h3>Output / error</h3><pre>Before closing an application, make sure to save the document first. This ensures that any changes made in the document are saved and can be restored later if needed.</pre></details></article><article><h2>Configuration and provenance</h2><pre>{
+  &quot;schema_version&quot;: 1,
+  &quot;tool_version&quot;: &quot;0.1.0&quot;,
+  &quot;source&quot;: &quot;measured&quot;,
+  &quot;created_at_utc&quot;: &quot;2026-10-18T10:26:11.536903+00:00&quot;,
+  &quot;model&quot;: &quot;qwen2.5:0.5b&quot;,
+  &quot;hardware_label&quot;: &quot;Windows desktop - i7-8700K, 32 GB RAM, CPU only, 2 threads&quot;,
+  &quot;runtime_protocol&quot;: &quot;ollama&quot;,
+  &quot;settings&quot;: {
+    &quot;context&quot;: 512,
+    &quot;max_output_tokens&quot;: 128,
+    &quot;threads&quot;: 2,
+    &quot;cpu&quot;: true,
+    &quot;keep_alive&quot;: &quot;0&quot;,
+    &quot;temperature&quot;: 0,
+    &quot;seed&quot;: 42,
+    &quot;thinking&quot;: false
+  },
+  &quot;case_file_sha256&quot;: &quot;f8ccf1f241c1706248921ddcc68fcc5584d4c27bbf1f31dda4760ec498ac28c1&quot;,
+  &quot;host&quot;: {
+    &quot;os&quot;: &quot;Windows&quot;,
+    &quot;architecture&quot;: &quot;AMD64&quot;,
+    &quot;logical_cpus&quot;: 12
+  },
+  &quot;notes&quot;: [
+    &quot;First-content latency measures first non-empty response content received by the client, not a tokenizer-level first-token timestamp.&quot;,
+    &quot;Throughput uses runtime-reported token counts and generation duration when available; it is distinct from end-to-end throughput.&quot;,
+    &quot;Token counts may include runtime-specific accounting. Prompt templates, cache state, model precision and runtime affect comparisons.&quot;,
+    &quot;Mechanical checks are task smoke tests, not a general intelligence score. Language quality requires human review.&quot;,
+    &quot;Small sample sizes do not establish statistical performance rankings.&quot;,
+    &quot;A fixture run validates the tool only and must never be presented as model performance.&quot;
+  ],
+  &quot;runtime_metadata&quot;: {
+    &quot;runtime_version&quot;: &quot;0.32.9&quot;,
+    &quot;model_details&quot;: {
+      &quot;parent_model&quot;: &quot;&quot;,
+      &quot;format&quot;: &quot;gguf&quot;,
+      &quot;family&quot;: &quot;qwen2&quot;,
+      &quot;families&quot;: [
+        &quot;qwen2&quot;
+      ],
+      &quot;parameter_size&quot;: &quot;494.03M&quot;,
+      &quot;quantization_level&quot;: &quot;Q4_K_M&quot;
+    },
+    &quot;model_capabilities&quot;: [
+      &quot;completion&quot;,
+      &quot;tools&quot;
+    ],
+    &quot;model_digest&quot;: &quot;a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67&quot;
+  }
+}</pre></article>
+<footer>Generated locally with standard-library Python. No analytics, remote assets or client-side network requests. Inspect the accompanying raw JSON before drawing conclusions.</footer></main></body></html>

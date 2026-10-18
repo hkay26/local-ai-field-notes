@@ -34,6 +34,25 @@ preview source](demo/README.md) uses Remotion 4.0.536, with each scene available
 on its own timeline. It is a silent preview with scene stills; narration and a
 published creator-channel episode are future work.
 
+## A second local model: visible failures included
+
+Qwen2.5:0.5b was downloaded from the official Ollama library and tested on the
+same desktop, CPU only with two threads, context 512 and an output cap of 128.
+The [raw three-case record](examples/2026-10-18-qwen2.5-0.5b-cpu.json) and
+[offline report](examples/2026-10-18-qwen2.5-0.5b-cpu.html) preserve all responses.
+
+| Case | Recorded result | Visible observation |
+|---|---|---|
+| Strict event JSON | Fail | Values match, but Markdown code fences violate the request for only valid JSON. |
+| Short library summary | Mechanical pass | The answer meets the word limit and required-term checks. |
+| Urdu assistance | Human review | The actual answer is in English; the requested Urdu was not provided. |
+
+These are three observations with one run per case, not a general quality
+score. The language note is a visible observation; the raw human-review flag is
+retained. The model architecture and size differ from the Qwen3.5:9b record,
+and the output cap is 128 rather than 64. Both records declare Q4_K_M precision.
+Their timings do not constitute a hardware-only comparison.
+
 ## What works in the first release
 
 - Stream responses from an already-running local Ollama-compatible server.
