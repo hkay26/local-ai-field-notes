@@ -91,7 +91,53 @@ GPU execution did not fix the answer failures: strict JSON still included code
 fences, and the Urdu task still received English. No new hardware, donated
 compute or broad model-quality improvement is claimed.
 
-## What works in the first release
+## Lemonade compatibility verified on the existing CPU
+
+Portable Lemonade **2026.42.1**, with llama.cpp CPU backend b11393, completed
+all three cases using a separate copy of the existing Qwen2.5:0.5b GGUF.
+Native health confirmed CPU placement, context 512 and two threads. The
+independently verified weights hash and cleanup evidence are in the
+[provenance record](examples/2026-10-18-lemonade-provenance.json).
+
+| Mode | Raw evidence | Observed result |
+|---|---|---|
+| Generate/completion | [JSON](examples/2026-10-18-lemonade-qwen2.5-0.5b-generate.json) · [HTML](examples/2026-10-18-lemonade-qwen2.5-0.5b-generate.html) | All completed at the output cap; extraction and summary failed, and Urdu was not supplied. |
+| Explicit chat | [JSON](examples/2026-10-18-lemonade-qwen2.5-0.5b-chat.json) · [HTML](examples/2026-10-18-lemonade-qwen2.5-0.5b-chat.html) | All completed normally; JSON fences still failed strict extraction, summary passed mechanical checks, Urdu still received English. |
+
+The task prompts and weights were retained. Completion and chat use distinct
+request formats and prompt rendering. Their timings and outputs are not a
+controlled hardware or general-quality comparison.
+
+- The compatible /api/version returns **0.16.1**; native Lemonade health reports **2026.42.1**.
+- The all-zero model digest is a placeholder. The original generate record
+  retains that API response; it must not be treated as a weights hash.
+- Streamed token counts and generation duration were unavailable. Runtime
+  tokens/second remains unavailable.
+- keep_alive=0 was requested, but native health still showed the model loaded
+  after the chat cases. Explicit native unload emptied the model list, then
+  the test server was stopped.
+
+Version 0.2 adds explicit chat requests and Lemonade-native identity metadata.
+It retains a reported zero digest separately and marks the content digest
+unavailable. With an already-running, configured local Lemonade instance:
+
+    python fieldnotes.py run \
+      --endpoint http://127.0.0.1:13305 \
+      --runtime-kind lemonade --api-mode chat \
+      --model fieldnotes-qwen2.5-0.5b:latest \
+      --cpu --threads 2 --context 512 --max-output-tokens 128 \
+      --hardware-label "Your public hardware description" \
+      --output my-lemonade-chat-run.json
+
+Select your own downloaded model name from the compatible model list. For native
+Lemonade CLI loading, use the ID from /v1/models; a compatible :latest alias can
+differ. Configure and verify the native CPU backend and thread settings first:
+client options alone do not prove enforcement.
+
+This test used no AMD hardware, new cloud allocation or hardware award. AMD
+membership, challenge eligibility and remaining award supply are separate.
+
+## What works in the current release
 
 A separate [free community inference example](docs/free-community-inference.md)
 also completed a fictional JSON task through AI Horde's anonymous API. It can
@@ -176,9 +222,9 @@ benchmark a real model.
 ## Scope and next steps
 
 The initial task set covers strict extraction, constrained summarization and
-English-to-Urdu assistance. Next steps are additional measured local runs,
-reproduction on another machine and an optional Lemonade-compatible integration.
-Compatibility with Lemonade has **not** yet been verified by running that server.
+English-to-Urdu assistance. Next steps are broader validation and reproduction
+on another machine. Lemonade compatibility is verified only for the small
+CPU configuration documented above; other versions and devices need their own checks.
 
 The proposed first support request is a modest compute-credit grant or a
 returnable review system, to extend reproducible tests and educational
@@ -187,7 +233,9 @@ walkthroughs. No sponsor approval or equipment award is claimed.
 ## Protocol references
 
 - [Ollama generate API](https://docs.ollama.com/api/generate)
+- [Ollama chat API](https://docs.ollama.com/api/chat)
 - [Lemonade API overview](https://lemonade-server.ai/docs/api/)
+- [Lemonade Ollama-compatible API](https://lemonade-server.ai/docs/api/ollama/)
 
 ## Contact and license
 

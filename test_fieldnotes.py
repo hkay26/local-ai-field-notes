@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 import fieldnotes as fn
 
 class EndpointTests(unittest.TestCase):
@@ -55,7 +56,15 @@ class FixtureServer(BaseHTTPRequestHandler):
             return
         if type(self).mode=="malformed":
             self.wfile.write(b'not JSON\n');return
-        event={"response":'{"city":"Houston","day":"Tuesday","attendees":12}',"done":False}
+        answer='{"city":"Houston","day":"Tuesday","attendees":12}'
+        if self.path=="/api/chat":
+            messages=data.get("messages")
+            if (not isinstance(messages,list) or len(messages)!=1 or not isinstance(messages[0],dict)
+                    or messages[0].get("role")!="user" or not isinstance(messages[0].get("content"),str) or "prompt" in data):
+                self.wfile.write(b'{"error":"Invalid chat request"}\n');return
+            event={"message":{"role":"assistant","content":answer},"done":False}
+        else:
+            event={"response":answer,"done":False}
         self.wfile.write(json.dumps(event).encode()+b"\n");self.wfile.flush()
         if type(self).mode=="truncated":
             return
@@ -101,6 +110,16 @@ class WorkflowTests(unittest.TestCase):
                 run=fn.run_experiment(self.args(tmp,base))
                 self.assertEqual(run["results"][0]["status"],"error")
                 self.assertEqual(run["results"][0]["check"]["status"],"not_run")
+    def test_explicit_chat_mode_streams_message_content(self):
+        with tempfile.TemporaryDirectory() as tmp,server("valid") as base:
+            args=self.args(tmp,base);args.api_mode="chat"
+            run=fn.run_experiment(args)
+            self.assertEqual(run["api_mode"],"chat")
+            self.assertEqual(run["results"][0]["status"],"completed")
+            self.assertEqual(run["results"][0]["check"]["status"],"pass")
+        with tempfile.TemporaryDirectory() as tmp,server("truncated") as base:
+            args=self.args(tmp,base);args.api_mode="chat"
+            self.assertEqual(fn.run_experiment(args)["results"][0]["status"],"error")
     def test_missing_optional_metrics_preserve_a_valid_response(self):
         with tempfile.TemporaryDirectory() as tmp,server("no_metrics") as base:
             result=fn.run_experiment(self.args(tmp,base))["results"][0]
@@ -120,6 +139,30 @@ class WorkflowTests(unittest.TestCase):
     def test_report_rejects_missing_provenance(self):
         with tempfile.TemporaryDirectory() as tmp,self.assertRaises(ValueError):
             fn.make_report({"results":[]},Path(tmp)/"unsafe.html")
+
+class MetadataTests(unittest.TestCase):
+    def test_lemonade_native_version_and_placeholder_digest(self):
+        zero="sha256:"+"0"*64
+        def response(base,path,payload=None,timeout=10):
+            return {"/api/version":{"version":"0.16.1"},"/api/show":{"details":{}},
+                "/api/tags":{"models":[{"name":"fixture-model","digest":zero}]},
+                "/v1/health":{"version":"2026.42.1"}}[path]
+        with patch.object(fn,"json_request",side_effect=response):
+            result=fn.safe_metadata("http://localhost","fixture-model","lemonade")
+        self.assertEqual(result["runtime_version"],"2026.42.1")
+        self.assertEqual(result["compatibility_api_version"],"0.16.1")
+        self.assertIsNone(result["model_digest"])
+        self.assertEqual(result["reported_model_digest"],zero)
+    def test_real_digest_is_retained_and_missing_native_identity_is_not_fabricated(self):
+        digest="a"*64
+        def response(base,path,payload=None,timeout=10):
+            if path=="/v1/health":raise OSError("fixture unavailable")
+            return {"/api/version":{"version":"compat"},"/api/show":{},
+                "/api/tags":{"models":[{"name":"fixture-model","digest":digest}]}}[path]
+        with patch.object(fn,"json_request",side_effect=response):
+            result=fn.safe_metadata("http://localhost","fixture-model","lemonade")
+        self.assertEqual(result["model_digest"],digest)
+        self.assertEqual(result["runtime_version"],"not_reported")
 
 if __name__=="__main__":
     unittest.main(verbosity=2)

@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "source": "measured",
+  "created_at_utc": "2026-10-18T11:28:30.662759+00:00",
+  "model": "fieldnotes-qwen2.5-0.5b:latest",
+  "hardware_label": "Windows desktop - i7-8700K, 32 GB RAM, CPU only, 2 threads; portable Lemonade",
+  "runtime_protocol": "ollama",
+  "settings": {
+    "context": 512,
+    "max_output_tokens": 128,
+    "threads": 2,
+    "cpu": true,
+    "keep_alive": "0",
+    "temperature": 0,
+    "seed": 42,
+    "thinking": false
+  },
+  "case_file_sha256": "f8ccf1f241c1706248921ddcc68fcc5584d4c27bbf1f31dda4760ec498ac28c1",
+  "host": {
+    "os": "Windows",
+    "architecture": "AMD64",
+    "logical_cpus": 12
+  },
+  "notes": [
+    "First-content latency measures first non-empty response content received by the client, not a tokenizer-level first-token timestamp.",
+    "Throughput uses runtime-reported token counts and generation duration when available; it is distinct from end-to-end throughput.",
+    "Token counts may include runtime-specific accounting. Prompt templates, cache state, model precision and runtime affect comparisons.",
+    "Mechanical checks are task smoke tests, not a general intelligence score. Language quality requires human review.",
+    "Small sample sizes do not establish statistical performance rankings.",
+    "A fixture run validates the tool only and must never be presented as model performance."
+  ],
+  "runtime_metadata": {
+    "runtime_version": "0.16.1",
+    "model_details": {
+      "families": [
+        "llamacpp"
+      ],
+      "family": "llamacpp",
+      "format": "gguf",
+      "parameter_size": "0.5B",
+      "parent_model": "",
+      "quantization_level": ""
+    },
+    "model_capabilities": [
+      "completion",
+      "tools"
+    ],
+    "model_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "results": [
+    {
+      "case_id": "extract-event",
+      "title": "Extract a fictional event as strict JSON",
+      "prompt": "Return ONLY valid JSON with keys city (string), day (string), attendees (integer). Fictional event: a Houston workshop is on Tuesday and has 12 attendees. Do not add explanations.",
+      "response": " {\"city\": \"Houston\", \"day\": \"Tuesday\", \"attendees\": 12} {\"city\": \"San Francisco\", \"day\": \"Wednesday\", \"attendees\": 15} {\"city\": \"Los Angeles\", \"day\": \"Thursday\", \"attendees\": 10} {\"city\": \"New York\", \"day\": \"Friday\", \"attendees\": 18} {\"city\": \"Chicago\", \"day\": \"Saturday\", \"attendees\": 15} {\"city\": \"Phoenix\", \"day\": \"Sunday\", \"attendees\": 10} {\"city\": \"Denver",
+      "wall_seconds": 3.348165,
+      "first_content_seconds": 0.347458,
+      "runtime_output_tokens": null,
+      "runtime_generation_seconds": null,
+      "runtime_generation_tokens_per_second": null,
+      "runtime_load_seconds": null,
+      "done_reason": "length",
+      "check": {
+        "status": "fail",
+        "reason": "Response is not strict JSON. Markdown fences and commentary are not accepted."
+      },
+      "status": "completed",
+      "repeat": 1
+    },
+    {
+      "case_id": "summary-constraints",
+      "title": "Summarize a fictional library notice",
+      "prompt": "Summarize the following fictional notice in 35 words or fewer. Include the library, day and closure time. Notice: Cedar Library will close at 4 p.m. on Friday for maintenance. It reopens Saturday at 10 a.m. Digital services remain available.",
+      "response": " Library hours are 10 a.m. to 5 p.m. on weekdays. Library hours are 10 a.m. to 5 p.m. on weekends. Library hours are 10 a.m. to 5 p.m. on weekdays. Library hours are 10 a.m. to 5 p.m. on weekends. Library hours are 10 a.m. to 5 p.m. on weekdays. Library hours are 10 a.m. to 5 p.m. on weekends. Library hours are 10 a.m. to 5 p.m. on weekdays. Library hours",
+      "wall_seconds": 3.819931,
+      "first_content_seconds": 0.563879,
+      "runtime_output_tokens": null,
+      "runtime_generation_seconds": null,
+      "runtime_generation_tokens_per_second": null,
+      "runtime_load_seconds": null,
+      "done_reason": "length",
+      "check": {
+        "status": "fail",
+        "words": 72,
+        "missing_terms": [
+          "Cedar",
+          "Friday",
+          "4"
+        ],
+        "reason": "Mechanical constraints only; this does not establish factual or semantic quality."
+      },
+      "status": "completed",
+      "repeat": 1
+    },
+    {
+      "case_id": "urdu-assistance",
+      "title": "Explain an ordinary instruction in Urdu",
+      "prompt": "In clear Urdu, explain to a beginner how to save a document before closing an application. Keep it to three short sentences. Do not claim that you have saved anything.",
+      "response": " Explain the process in a way a beginner can understand. Save a document before closing an application by following these steps:\n\n1. Open the application you want to save the document in.\n2. Click on the \"File\" menu.\n3. Select \"Save As\" or \"Save\" depending on the application you are using.\n4. Choose a location to save the document.\n5. Give the document a name and click \"Save.\"\n\nThis process ensures that the document is saved before closing the application, which is a good practice to prevent data loss and maintain the integrity of your work. Remember, it's always better to save your work before",
+      "wall_seconds": 3.390808,
+      "first_content_seconds": 0.344347,
+      "runtime_output_tokens": null,
+      "runtime_generation_seconds": null,
+      "runtime_generation_tokens_per_second": null,
+      "runtime_load_seconds": null,
+      "done_reason": "length",
+      "check": {
+        "status": "human_review",
+        "reason": "Human review: correct Urdu, clear beginner instructions, three short sentences, and no false claim of an action performed. No automatic language-quality score."
+      },
+      "status": "completed",
+      "repeat": 1
+    }
+  ]
+}

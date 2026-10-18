@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 MAX_RESPONSE_BYTES = 2_000_000
 
 def endpoint_url(value: str) -> str:
@@ -102,19 +102,24 @@ def validate_output(text: str,check: dict):
 def positive_number(value):
     return isinstance(value,(int,float)) and not isinstance(value,bool) and math.isfinite(value) and value>0
 
-def run_case(base,model,case,settings,timeout):
+def run_case(base,model,case,settings,timeout,api_mode="generate"):
     payload={"model":model,"prompt":case["prompt"],"stream":True,
              "keep_alive":settings["keep_alive"],"think":False,
              "options":{"temperature":0,"seed":42,"num_ctx":settings["context"],
                         "num_predict":settings["max_output_tokens"],"num_thread":settings["threads"]}}
     if settings["cpu"]:
         payload["options"]["num_gpu"]=0
+    if api_mode=="chat":
+        payload.pop("prompt")
+        payload["messages"]=[{"role":"user","content":case["prompt"]}]
+    elif api_mode!="generate":
+        raise ValueError("API mode must be generate or chat.")
     started=time.perf_counter()
     first_content=None
     final=None
     parts=[]
     consumed=0
-    req=urllib.request.Request(base+"/api/generate",data=json.dumps(payload).encode(),
+    req=urllib.request.Request(base+"/api/"+api_mode,data=json.dumps(payload).encode(),
         headers={"Content-Type":"application/json","User-Agent":"LocalAIFieldNotes/"+VERSION})
     with urllib.request.urlopen(req,timeout=timeout) as response:
         while True:
@@ -129,7 +134,13 @@ def run_case(base,model,case,settings,timeout):
             event=json.loads(line)
             if event.get("error"):
                 raise ValueError("Runtime returned an error: "+str(event["error"])[:400])
-            text=event.get("response","")
+            if api_mode=="chat":
+                message=event.get("message",{})
+                if not isinstance(message,dict):
+                    raise ValueError("Runtime chat message was not an object.")
+                text=message.get("content","")
+            else:
+                text=event.get("response","")
             if not isinstance(text,str):
                 raise ValueError("Runtime response content was not text.")
             if text:
@@ -159,7 +170,7 @@ def run_case(base,model,case,settings,timeout):
         "check":validate_output(result,case["check"]),"status":"completed",
     }
 
-def safe_metadata(base,model):
+def safe_metadata(base,model,runtime_kind="ollama"):
     metadata={}
     for label,path,payload in [("version","/api/version",None),("model","/api/show",{"model":model}),("tags","/api/tags",None)]:
         try:
@@ -172,9 +183,23 @@ def safe_metadata(base,model):
             else:
                 match=next((m for m in response.get("models",[]) if m.get("name")==model or m.get("model")==model),None)
                 if match:
-                    metadata["model_digest"]=match.get("digest")
+                    digest=match.get("digest")
+                    if isinstance(digest,str) and re.fullmatch(r"(?:sha256:)?0{64}",digest):
+                        metadata["reported_model_digest"]=digest
+                        metadata["model_digest"]=None
+                        metadata["model_digest_note"]="Runtime returned an all-zero placeholder, not a model content digest."
+                    else:
+                        metadata["model_digest"]=digest
         except (OSError,ValueError) as exc:
             metadata[label+"_note"]=type(exc).__name__+": metadata unavailable"
+    if runtime_kind=="lemonade":
+        metadata["runtime_name"]="Lemonade"
+        metadata["compatibility_api_version"]=metadata.pop("runtime_version","not_reported")
+        try:
+            metadata["runtime_version"]=json_request(base,"/v1/health").get("version","not_reported")
+        except (OSError,ValueError) as exc:
+            metadata["runtime_version"]="not_reported"
+            metadata["identity_note"]=type(exc).__name__+": native runtime version unavailable"
     return metadata
 
 def atomic_json(path: Path,data):
@@ -193,10 +218,13 @@ def run_experiment(args):
     settings={"context":args.context,"max_output_tokens":args.max_output_tokens,
               "threads":args.threads,"cpu":args.cpu,"keep_alive":args.keep_alive,
               "temperature":0,"seed":42,"thinking":False}
+    api_mode=getattr(args,"api_mode","generate")
+    runtime_kind=getattr(args,"runtime_kind","ollama")
     run={
         "schema_version":1,"tool_version":VERSION,"source":args.source,
         "created_at_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
         "model":args.model,"hardware_label":args.hardware_label,"runtime_protocol":"ollama",
+        "api_mode":api_mode,"runtime_kind":runtime_kind,
         "settings":settings,"case_file_sha256":case_hash,
         "host":{"os":platform.system(),"architecture":platform.machine(),"logical_cpus":os.cpu_count()},
         "notes":[
@@ -205,9 +233,10 @@ def run_experiment(args):
             "Token counts may include runtime-specific accounting. Prompt templates, cache state, model precision and runtime affect comparisons.",
             "Mechanical checks are task smoke tests, not a general intelligence score. Language quality requires human review.",
             "Small sample sizes do not establish statistical performance rankings.",
+            "Settings are requested values; a compatible server may not implement every option. Inspect native configuration when verifying enforcement.",
             "A fixture run validates the tool only and must never be presented as model performance.",
         ],
-        "runtime_metadata":safe_metadata(base,args.model),"results":[]
+        "runtime_metadata":safe_metadata(base,args.model,runtime_kind),"results":[]
     }
     output=Path(args.output)
     if output.exists() and not args.overwrite:
@@ -215,7 +244,7 @@ def run_experiment(args):
     for repeat in range(1,args.repeat+1):
         for case in cases:
             try:
-                result=run_case(base,args.model,case,settings,args.timeout)
+                result=run_case(base,args.model,case,settings,args.timeout,api_mode)
                 result["repeat"]=repeat
             except (OSError,ValueError,TypeError) as exc:
                 result={"case_id":case["id"],"title":case.get("title",case["id"]),
@@ -237,6 +266,11 @@ def make_report(run,path: Path):
     fixture=run["source"]=="fixture"
     warning=("TEST FIXTURE - SYNTHETIC RESPONSES. This report verifies the runner/report workflow. It contains no measured model performance."
              if fixture else "MEASURED RUN. Results describe only this model, configuration and test set; no broader ranking is implied.")
+    metadata=run.get("runtime_metadata",{})
+    reported_digest=metadata.get("reported_model_digest",metadata.get("model_digest"))
+    digest_notice=("<div class=\"notice\">MODEL PROVENANCE: the compatible API returned an all-zero placeholder. "
+                   "It is not a model content digest; consult the accompanying independently collected provenance.</div>"
+                   if isinstance(reported_digest,str) and re.fullmatch(r"(?:sha256:)?0{64}",reported_digest) else "")
     cards=[]
     for result in results:
         status=result.get("check",{}).get("status","not_run")
@@ -249,7 +283,7 @@ def make_report(run,path: Path):
     report=f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local AI Field Notes - {esc(run.get("model"))}</title>
 <style>:root{{font:16px/1.55 system-ui;color:#203448;background:#eef3f6}}body{{margin:0}}main{{max-width:1040px;margin:auto;padding:40px 22px}}header{{background:#14283f;color:white;padding:32px;border-radius:18px}}h1{{font-size:2.5rem;line-height:1.1;margin:12px 0}}header p{{color:#d5e2ef}}.eyebrow{{letter-spacing:.14em;font-size:.75rem;font-weight:700}}.notice{{border-left:4px solid #a7700a;background:#fff3d8;padding:18px;margin:22px 0}}.stats,.metrics,.row{{display:flex;gap:24px;flex-wrap:wrap}}.stats{{padding:18px 0}}.stats span,.metrics span{{font-size:.8rem;color:#5a6f80}}b{{display:block;font-size:1.2rem;color:#17394b}}article{{background:white;border:1px solid #d4e0e7;border-radius:12px;padding:24px;margin:18px 0}}h2{{margin:0;font-size:1.2rem}}.row{{align-items:center;justify-content:space-between}}.pill{{font-size:.75rem;border:1px solid #91bcb5;padding:4px 10px;border-radius:99px}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;background:#eff4f7;border-radius:8px;font-size:.85rem}}summary{{cursor:pointer;color:#076f68}}footer{{font-size:.85rem;color:#607083}}details{{margin-top:20px}}@media print{{main{{padding:0}}article{{break-inside:avoid}}details{{display:block}}}}</style></head><body><main>
 <header><div class="eyebrow">LOCAL AI FIELD NOTES / EXPERIMENT RECORD</div><h1>{esc(run.get("model"))}</h1><p>{esc(run.get("hardware_label"))}<br>{esc(run.get("created_at_utc"))}</p></header>
-<div class="notice">{esc(warning)}</div><div class="stats"><span>Completed<b>{len(good)} / {len(results)}</b></span><span>Median client wall time<b>{median}</b></span><span>Evidence source<b>{esc(run["source"])}</b></span></div>
+<div class="notice">{esc(warning)}</div>{digest_notice}<div class="stats"><span>Completed<b>{len(good)} / {len(results)}</b></span><span>Median client wall time<b>{median}</b></span><span>Evidence source<b>{esc(run["source"])}</b></span></div>
 {"".join(cards)}<article><h2>Configuration and provenance</h2><pre>{esc(json.dumps({k:v for k,v in run.items() if k!="results"},indent=2,ensure_ascii=False))}</pre></article>
 <footer>Generated locally with standard-library Python. No analytics, remote assets or client-side network requests. Inspect the accompanying raw JSON before drawing conclusions.</footer></main></body></html>"""
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -262,6 +296,8 @@ def main(argv=None):
     run=sub.add_parser("run",help="Run small experiments against an already-running local Ollama-compatible server.")
     run.add_argument("--endpoint",default="http://127.0.0.1:11434")
     run.add_argument("--model",required=True)
+    run.add_argument("--api-mode",choices=["generate","chat"],default="generate",help="Explicit completion or chat request; prompt rendering can differ.")
+    run.add_argument("--runtime-kind",choices=["ollama","lemonade"],default="ollama",help="Use Lemonade native health metadata rather than mistaking its compatibility version for its native version.")
     run.add_argument("--cases",default=str(Path(__file__).with_name("cases.json")))
     run.add_argument("--output",required=True)
     run.add_argument("--hardware-label",required=True,help="A public, non-sensitive description; do not include serial numbers.")
@@ -271,7 +307,7 @@ def main(argv=None):
     run.add_argument("--max-output-tokens",type=int,default=128)
     run.add_argument("--threads",type=int,default=2)
     run.add_argument("--cpu",action="store_true")
-    run.add_argument("--keep-alive",default="0",help="0 unloads the model after each request.")
+    run.add_argument("--keep-alive",default="0",help="Requested keep-alive value; Ollama uses 0 to unload. Compatible servers may differ.")
     run.add_argument("--timeout",type=float,default=90)
     run.add_argument("--source",choices=["measured","fixture"],default="measured")
     run.add_argument("--overwrite",action="store_true")

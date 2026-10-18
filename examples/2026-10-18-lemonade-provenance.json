@@ -1,0 +1,48 @@
+{
+  "source": "measured operational evidence; not a hardware ranking",
+  "runtime": {
+    "name": "Lemonade",
+    "version": "2026.42.1",
+    "backend": "llama.cpp CPU b11393",
+    "archive_sha256": "6bc9b9f301aa8235f2e6a2a51d75f0ba0f9cb3580e65ff0ea4fc6752ef3a8f3f",
+    "archive_source": "https://github.com/lemonade-sdk/lemonade/releases/download/v2026.42.1/lemonade-embeddable-2026.42.1-windows-x64.zip"
+  },
+  "model": {
+    "name": "Qwen2.5:0.5b",
+    "size_bytes": 397284474,
+    "independently_verified_gguf_sha256": "c5396e06af294bd101b30dce59131a76d2b773e76950acc870eda801d3ab0515",
+    "origin": "Separate read-only-use copy of the existing official-Ollama-library model; original model store unchanged."
+  },
+  "observed_native_configuration": {
+    "device": "cpu",
+    "context": 512,
+    "threads": 2,
+    "batch_threads": 2,
+    "parallel_slots": 1,
+    "frontend_listeners": [
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 13305
+      },
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 9000
+      }
+    ],
+    "backend_url": "http://127.0.0.1:8001/v1"
+  },
+  "observed_limits": [
+    "The Ollama-compatible /api/version value is 0.16.1, not the native Lemonade version.",
+    "The compatible tags/placement APIs return an all-zero digest, not the actual GGUF content hash.",
+    "No output-token count, generation duration or runtime token/s metric was supplied for these streamed requests; none is estimated.",
+    "keep_alive=0 was requested, but native health still reported the model loaded after all chat cases; explicit native unload was used.",
+    "Generate and chat use distinct request formats. Their outputs and timings are not a controlled hardware comparison.",
+    "The first native load attempt used an Ollama :latest alias and was rejected; retry used the ID from the native model catalog, without changing weights or task prompts."
+  ],
+  "cleanup": {
+    "native_models_after_explicit_unload": [],
+    "owned_server_tree_stopped": true,
+    "frontend_port_closed": true
+  },
+  "evidence_scope": "Actual local CPU inference only; no new hardware, cloud allocation, AMD membership, challenge entry or award."
+}
