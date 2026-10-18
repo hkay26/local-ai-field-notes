@@ -53,6 +53,26 @@ retained. The model architecture and size differ from the Qwen3.5:9b record,
 and the output cap is 128 rather than 64. Both records declare Q4_K_M precision.
 Their timings do not constitute a hardware-only comparison.
 
+## Existing GPU access verified
+
+A separate [automatic-placement run](examples/2026-10-18-qwen2.5-0.5b-auto.json)
+completed the same three cases on the desktop's GTX 1080 Ti. The
+[placement evidence](examples/2026-10-18-qwen2.5-0.5b-auto-placement.json)
+records Ollama reporting all 434,099,977 loaded model bytes in VRAM. Driver
+582.66 and Ollama 0.32.9 were observed. An
+[offline report](examples/2026-10-18-qwen2.5-0.5b-auto.html) includes every answer.
+
+The first request took 30.288 seconds, including a runtime-reported 20.690-second
+load; the next two took 0.845 and 0.502 seconds. This run kept the model resident
+for ten seconds between requests, unlike the CPU record's unload-after-each
+setting. Cache state and other desktop activity were uncontrolled. These values
+verify a usable local GPU path, not a controlled speed comparison. The model was
+explicitly unloaded afterward.
+
+GPU execution did not fix the answer failures: strict JSON still included code
+fences, and the Urdu task still received English. No new hardware, donated
+compute or broad model-quality improvement is claimed.
+
 ## What works in the first release
 
 - Stream responses from an already-running local Ollama-compatible server.

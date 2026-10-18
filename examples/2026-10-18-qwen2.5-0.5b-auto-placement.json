@@ -1,0 +1,29 @@
+{
+  "gpu_after": "NVIDIA GeForce GTX 1080 Ti, 582.66, 11264 MiB, 3887 MiB, 18 %",
+  "gpu_before": "NVIDIA GeForce GTX 1080 Ti, 582.66, 11264 MiB, 4578 MiB, 21 %",
+  "ollama_ps": {
+    "models": [
+      {
+        "name": "qwen2.5:0.5b",
+        "model": "qwen2.5:0.5b",
+        "size": 434099977,
+        "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "494.03M",
+          "quantization_level": "Q4_K_M"
+        },
+        "expires_at": "2026-10-18T05:41:21.9825348-05:00",
+        "size_vram": 434099977,
+        "context_length": 512
+      }
+    ]
+  },
+  "purpose": "Verify actual placement for a tiny-model run on existing hardware; not new hardware access or a general performance benchmark.",
+  "captured_at_utc": "2026-10-18T10:41:12Z"
+}
