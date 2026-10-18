@@ -2,6 +2,8 @@
 
 **Small, inspectable experiments for people using ordinary computers.**
 
+![A working local-AI project with an inspectable measured record](docs/storyboard/01-opening.png)
+
 A Python standard-library runner and self-contained HTML report for local
 Ollama-compatible model servers. It records the prompt, configuration, raw
 answer, completion status and the timing evidence behind each result.
@@ -23,6 +25,14 @@ model quality. It does not benchmark the desktop's GTX 1080 Ti.
 
 An [offline HTML report](examples/2026-10-18-cpu-extraction.html) and the
 [two-page project proposal](docs/project-brief.pdf) are included.
+
+## Reviewer demonstration
+
+The [five-scene storyboard](docs/storyboard.md) presents this same measured
+record, its settings and the narrow extraction check. The [editable one-minute
+preview source](demo/README.md) uses Remotion 4.0.536, with each scene available
+on its own timeline. It is a silent preview with scene stills; narration and a
+published creator-channel episode are future work.
 
 ## What works in the first release
 
