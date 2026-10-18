@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "source": "measured",
+  "created_at_utc": "2026-10-18T09:58:39.680710+00:00",
+  "model": "qwen3.5:9b",
+  "hardware_label": "Windows desktop - i7-8700K, 32 GB RAM, CPU only, 2 threads",
+  "runtime_protocol": "ollama",
+  "settings": {
+    "context": 512,
+    "max_output_tokens": 64,
+    "threads": 2,
+    "cpu": true,
+    "keep_alive": "0",
+    "temperature": 0,
+    "seed": 42,
+    "thinking": false
+  },
+  "case_file_sha256": "f8ccf1f241c1706248921ddcc68fcc5584d4c27bbf1f31dda4760ec498ac28c1",
+  "host": {
+    "os": "Windows",
+    "architecture": "AMD64",
+    "logical_cpus": 12
+  },
+  "notes": [
+    "First-content latency measures first non-empty response content received by the client, not a tokenizer-level first-token timestamp.",
+    "Throughput uses runtime-reported token counts and generation duration when available; it is distinct from end-to-end throughput.",
+    "Token counts may include runtime-specific accounting. Prompt templates, cache state, model precision and runtime affect comparisons.",
+    "Mechanical checks are task smoke tests, not a general intelligence score. Language quality requires human review.",
+    "Small sample sizes do not establish statistical performance rankings.",
+    "A fixture run validates the tool only and must never be presented as model performance."
+  ],
+  "runtime_metadata": {
+    "runtime_version": "0.32.9",
+    "model_details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "9.7B",
+      "quantization_level": "Q4_K_M"
+    },
+    "model_capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ],
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
+  },
+  "results": [
+    {
+      "case_id": "extract-event",
+      "title": "Extract a fictional event as strict JSON",
+      "prompt": "Return ONLY valid JSON with keys city (string), day (string), attendees (integer). Fictional event: a Houston workshop is on Tuesday and has 12 attendees. Do not add explanations.",
+      "response": "{\n\"city\": \"Houston\",\n\"day\": \"Tuesday\",\n\"attendees\": 12\n}",
+      "wall_seconds": 26.751794,
+      "first_content_seconds": 19.293491,
+      "runtime_output_tokens": 26,
+      "runtime_generation_seconds": 7.458284,
+      "runtime_generation_tokens_per_second": 3.4861,
+      "runtime_load_seconds": 14.793387,
+      "done_reason": "stop",
+      "check": {
+        "status": "pass",
+        "reason": "Expected fields/types match."
+      },
+      "status": "completed",
+      "repeat": 1
+    }
+  ]
+}

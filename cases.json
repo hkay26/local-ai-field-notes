@@ -1,0 +1,38 @@
+[
+  {
+    "id": "extract-event",
+    "title": "Extract a fictional event as strict JSON",
+    "prompt": "Return ONLY valid JSON with keys city (string), day (string), attendees (integer). Fictional event: a Houston workshop is on Tuesday and has 12 attendees. Do not add explanations.",
+    "check": {
+      "type": "json_subset",
+      "expected": {
+        "city": "Houston",
+        "day": "Tuesday",
+        "attendees": 12
+      }
+    }
+  },
+  {
+    "id": "summary-constraints",
+    "title": "Summarize a fictional library notice",
+    "prompt": "Summarize the following fictional notice in 35 words or fewer. Include the library, day and closure time. Notice: Cedar Library will close at 4 p.m. on Friday for maintenance. It reopens Saturday at 10 a.m. Digital services remain available.",
+    "check": {
+      "type": "summary_constraints",
+      "max_words": 35,
+      "required_terms": [
+        "Cedar",
+        "Friday",
+        "4"
+      ]
+    }
+  },
+  {
+    "id": "urdu-assistance",
+    "title": "Explain an ordinary instruction in Urdu",
+    "prompt": "In clear Urdu, explain to a beginner how to save a document before closing an application. Keep it to three short sentences. Do not claim that you have saved anything.",
+    "check": {
+      "type": "human",
+      "rubric": "Human review: correct Urdu, clear beginner instructions, three short sentences, and no false claim of an action performed. No automatic language-quality score."
+    }
+  }
+]
