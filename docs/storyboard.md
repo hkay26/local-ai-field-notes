@@ -18,7 +18,7 @@ ranking or a sponsor announcement. All timings trace to the [raw record](../exam
 
 ## 4. Output and verification limits
 
-![Actual JSON output and the runner's ten tests](storyboard/04-evidence.png)
+![Actual JSON output and the runner's 13 tests](storyboard/04-evidence.png)
 
 ## 5. Proposed next experiments
 
@@ -27,3 +27,7 @@ ranking or a sponsor announcement. All timings trace to the [raw record](../exam
 The code and visuals were developed with AI coding assistance. Layouts were
 checked in Remotion Studio and as five 1920×1080 still frames. Lint and TypeScript
 checks passed. [Preview source and setup](../demo/README.md).
+
+The [finished silent MP4](field-note-001.mp4) is 60 seconds at 1920×1080/30 fps.
+Its five scenes and final frame were visually checked; the complete file
+decoded without errors. The measured CPU record remains unchanged.

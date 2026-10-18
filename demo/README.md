@@ -32,7 +32,16 @@ The [storyboard](../docs/storyboard.md) contains visually checked scene stills.
 The source figures come from the [raw measured record](../examples/2026-10-18-cpu-extraction.json).
 The preview identifies the run as CPU only, with two threads, and separates
 client wall time, first answer-content latency and runtime generation speed.
-The ten passing tests verify the runner; they do not establish general model quality.
+The 13 passing tests verify the runner; they do not establish general model quality.
 
-Current status is an editable preview and stills. Narration, additional measured
-runs, hardware evaluation and creator-channel publication are future work.
+A [60-second silent MP4](../docs/field-note-001.mp4) is included alongside the
+editable preview and stills. The export has 1,800 frames at 1920×1080 and 30 fps,
+H.264/yuv420p, with no audio stream. Every frame decoded without errors; samples
+at 2, 12, 25, 40, 52 and 59.9 seconds were visually checked. The current caption
+reflects 13 passing runner tests; Linux/Arm64 and larger-model experiments remain
+proposed work. No hardware award or private GPU allocation is implied.
+
+The original CPU measurements are unchanged. Export used one Remotion worker
+and software graphics; the final H.264 file was normalized to limited-range
+yuv420p with fast-start metadata. No paid renderer or external media was used.
+Narration, broader evaluation and creator-channel publication are future work.

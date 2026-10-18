@@ -31,8 +31,10 @@ An [offline HTML report](examples/2026-10-18-cpu-extraction.html) and the
 The [five-scene storyboard](docs/storyboard.md) presents this same measured
 record, its settings and the narrow extraction check. The [editable one-minute
 preview source](demo/README.md) uses Remotion 4.0.536, with each scene available
-on its own timeline. It is a silent preview with scene stills; narration and a
-published creator-channel episode are future work.
+on its own timeline. A [watchable 60-second silent MP4](docs/field-note-001.mp4)
+is included: 1920×1080, 30 fps, H.264, approximately 2.4 MB. All five scenes
+were visually checked and the complete file decoded without errors. Narration
+and a published creator-channel episode are future work.
 
 ## A second local model: visible failures included
 
