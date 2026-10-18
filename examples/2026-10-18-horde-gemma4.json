@@ -1,0 +1,148 @@
+{
+  "source": "measured remote API responses",
+  "authentication": "Published anonymous mode; no personal credential, account or payment",
+  "created_at_utc": "2026-10-18T10:47:50Z",
+  "notes": [
+    "Initial failure retained. Second attempt changed to the documented Gemma 4 no-thinking prompt format and increased output cap from 64 to 128.",
+    "No inference-speed, first-token-latency or hardware comparison is claimed. Queue and polling affect observed completion.",
+    "Anonymous requests have lowest priority and model/worker availability changes.",
+    "Only fictional data was submitted. Worker code and model identity are not under our control."
+  ],
+  "attempts": [
+    {
+      "check": {
+        "status": "fail",
+        "reason": "The generic instruction wrapper returned explanation text at the 64-token cap, not strict JSON."
+      },
+      "result": {
+        "generations": [
+          {
+            "text": "The user wants a JSON response with specific keys: \"city\", \"day\", and \"attendees\". The content should be based on the fictional event described: \"a Houston workshop is on Tuesday and has 12 attendees.\"\n\nConstraints:\n1. Return ONLY valid JSON.\n2. Keys must be exactly \"city\",",
+            "seed": 0,
+            "gen_metadata": [],
+            "worker_id": "b1b8af66-af12-4964-81c3-be5635216bf8",
+            "worker_name": "adadad",
+            "model": "google/gemma-4-31b",
+            "state": "ok"
+          }
+        ],
+        "finished": 1,
+        "processing": 0,
+        "restarted": 0,
+        "waiting": 0,
+        "done": true,
+        "faulted": false,
+        "wait_time": 0,
+        "queue_position": 0,
+        "kudos": 4.0,
+        "is_possible": true,
+        "eligible_workers": 1,
+        "eligible_worker_threads": 4,
+        "might_stall": false
+      },
+      "request": {
+        "context_fit": "reject",
+        "models": [
+          "google/gemma-4-31b"
+        ],
+        "slow_workers": true,
+        "prompt": "### Instruction:\nReturn ONLY valid JSON with keys city (string), day (string), attendees (integer). Fictional event: a Houston workshop is on Tuesday and has 12 attendees. Do not add explanations.\n\n### Response:\n",
+        "validated_backends": true,
+        "trusted_workers": true,
+        "params": {
+          "rep_pen": 1,
+          "temperature": 0,
+          "n": 1,
+          "max_context_length": 1024,
+          "max_length": 64,
+          "top_k": 1,
+          "top_p": 1
+        }
+      },
+      "receipt": {
+        "status": "submitted; pending verification",
+        "authentication": "Official public anonymous mode; no personal key or account",
+        "endpoint": "https://aihorde.net/api/v2/generate/text/async",
+        "receipt": {
+          "id": "4b0146ba-65d2-4a68-97fa-b0e715b636d9",
+          "kudos": 0.0
+        },
+        "model_identity": "Provider-reported model label, not independently verified weights/hardware",
+        "submitted_at_utc": "2026-10-18T10:46:40Z"
+      }
+    },
+    {
+      "check": {
+        "status": "pass",
+        "reason": "Exact city/day values and integer attendees verified by JSON parser."
+      },
+      "result": {
+        "generations": [
+          {
+            "text": "\n\n{\"city\":\"Houston\",\"day\":\"Tuesday\",\"attendees\":12}",
+            "seed": 0,
+            "gen_metadata": [],
+            "worker_id": "b1b8af66-af12-4964-81c3-be5635216bf8",
+            "worker_name": "adadad",
+            "model": "google/gemma-4-31b",
+            "state": "ok"
+          }
+        ],
+        "finished": 1,
+        "processing": 0,
+        "restarted": 0,
+        "waiting": 0,
+        "done": true,
+        "faulted": false,
+        "wait_time": 0,
+        "queue_position": 0,
+        "kudos": 3.0,
+        "is_possible": true,
+        "eligible_workers": 1,
+        "eligible_worker_threads": 4,
+        "might_stall": false
+      },
+      "request": {
+        "prompt": "<|turn>user\nReturn ONLY valid JSON with keys city (string), day (string), attendees (integer). Fictional event: a Houston workshop is on Tuesday and has 12 attendees. Do not add explanations.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+        "context_fit": "reject",
+        "slow_workers": true,
+        "models": [
+          "google/gemma-4-31b"
+        ],
+        "trusted_workers": true,
+        "params": {
+          "temperature": 0,
+          "max_length": 128,
+          "top_p": 1,
+          "max_context_length": 1024,
+          "top_k": 1,
+          "n": 1,
+          "rep_pen": 1
+        },
+        "validated_backends": true
+      },
+      "receipt": {
+        "receipt": {
+          "id": "26aec5fc-d60d-4277-a0f9-bac28b6bbf5d",
+          "kudos": 0.0
+        },
+        "changes_from_initial": "Official Gemma 4 no-thinking template; output cap increased from 64 to 128. First failure retained.",
+        "submitted_at_utc": "2026-10-18T10:47:05Z",
+        "format_source": "https://ai.google.dev/gemma/docs/capabilities/thinking",
+        "authentication": "Official public anonymous mode; no personal key or account",
+        "status": "submitted; pending verification",
+        "endpoint": "https://aihorde.net/api/v2/generate/text/async",
+        "model_identity": "Provider-reported model label, not independently verified weights/hardware"
+      }
+    }
+  ],
+  "scope": "Hosted volunteer text completion; model name is provider-reported. Weights, quantization and hardware were not independently verified. No private GPU allocation or hardware award.",
+  "provider": "AI Horde",
+  "format_source": "https://ai.google.dev/gemma/docs/capabilities/thinking",
+  "endpoint": "https://aihorde.net/api/v2/generate/text/async",
+  "later_python_client_check": {
+    "status": "HTTP 403 rejection",
+    "outcome": "No standalone Python client published; no client identity change or further API submission attempted. Earlier PowerShell results remain historical measured evidence.",
+    "read_only_catalog": "HTTP 403, error code 1010"
+  }
+}

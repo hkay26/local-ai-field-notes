@@ -75,6 +75,13 @@ compute or broad model-quality improvement is claimed.
 
 ## What works in the first release
 
+A separate [free community inference example](docs/free-community-inference.md)
+also completed a fictional JSON task through AI Horde's anonymous API. It can
+be accessed from home through supported interfaces without a personal key or
+local GPU, subject to availability and service filtering. A later Python-client
+attempt received HTTP 403; that limitation is recorded. This is shared hosted
+inference with a provider-reported model label, not a private GPU grant.
+
 - Stream responses from an already-running local Ollama-compatible server.
 - Keep client wall time separate from first-content latency and the runtime's
   own token-generation metrics.
