@@ -53,6 +53,24 @@ retained. The model architecture and size differ from the Qwen3.5:9b record,
 and the output cap is 128 rather than 64. Both records declare Q4_K_M precision.
 Their timings do not constitute a hardware-only comparison.
 
+## Qwen3.5:9b across all three cases
+
+A later [three-case CPU run](examples/2026-10-18-qwen3.5-9b-cpu-three-cases.json)
+and [offline report](examples/2026-10-18-qwen3.5-9b-cpu-three-cases.html)
+record Qwen3.5:9b with two CPU threads, context 512, output cap 128 and
+unload-after-each requests. All three requests completed. The strict JSON
+check passed, and the summary passed its narrow mechanical checks.
+
+The language case produced Urdu, while retaining the human-review flag.
+Its closing statement that data will always be safe is too broad: saving
+does not guarantee protection against every kind of data loss. This is a
+useful visible limitation, not a perfect language-quality result.
+
+Client wall times were 18.938, 18.793 and 35.143 seconds, respectively.
+Each case has one observation; cache state and other desktop activity were
+uncontrolled. This is not a controlled comparison with the earlier records.
+No cloud allocation or new hardware was involved.
+
 ## Existing GPU access verified
 
 A separate [automatic-placement run](examples/2026-10-18-qwen2.5-0.5b-auto.json)
